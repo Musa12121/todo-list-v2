@@ -3,7 +3,7 @@ let addBtn = document.getElementById("addBtn");
 let list = document.getElementById("list");
 let dateInput = document.getElementById("dateInput");
 let form = document.querySelector("form");
-
+let data = [];
 
 function main() {
   makingTask(input.value, dateInput.value);
@@ -26,7 +26,17 @@ function makingTask(text, date) {
   </label>
   <button id='editButton' onclick='edit(text,date)'>Edit</button>
   <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
-
+  let date2 = new Date();
+  data.push(
+    JSON.stringify({
+      id: Date.now().toString(),
+      title: text,
+      isCompleted: false,
+      createdAt: `${date2.toLocaleDateString().split("/").reverse().join("-")}T${date2.getHours()}:${date2.getMinutes()}:${date2.getSeconds()}`,
+      deadline: `${date}:00`,
+    }),
+  );
+  console.log(data);
   list.appendChild(listElement);
 
   setTimeout(() => {
@@ -34,9 +44,7 @@ function makingTask(text, date) {
   }, 100);
 }
 
-function edit(text,date){
-  
-}
+function edit(text, date) {}
 
 function toggle(e) {
   if (e.target.checked) {
