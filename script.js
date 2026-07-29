@@ -1,44 +1,65 @@
 let input = document.getElementById("text");
 let addBtn = document.getElementById("addBtn");
 let list = document.getElementById("list");
-let dateInput=document.getElementById("dateInput");
-let form=document.querySelector('form')
+let dateInput = document.getElementById("dateInput");
+let form = document.querySelector("form");
+
 
 function main() {
-
-  makingTask(input.value,dateInput.value);
+  makingTask(input.value, dateInput.value);
 
   input.value = "";
-
-  // saveLocalStorage();
 }
 
-// window.addEventListener("load", () => {
-//   JSON.parse(localStorage.getItem("items")).forEach((item) => makingTask(item));
-// });
-
-function makingTask(text,date) {
-  if(!text || !date){setError(text,date);return;}
+function makingTask(text, date) {
+  if (!text || !date) {
+    setError(text, date);
+    return;
+  }
   let listElement = document.createElement("li");
 
-  listElement.innerHTML = `<label><input type='checkbox' onchange='toggle(event)'><h2>${text}</h2> <span>Deadline:${date}</span></label><i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
+  listElement.innerHTML = `
+  <label>
+  <input type='checkbox' onchange='toggle(event)'>
+  <input type='text' value=${text}> 
+  <input type='datetime-local' value=${date}>
+  </label>
+  <button id='editButton' onclick='edit(text,date)'>Edit</button>
+  <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
 
   list.appendChild(listElement);
 
-  let timeout = setTimeout(() => {
+  setTimeout(() => {
     listElement.classList.add("showListElement");
   }, 100);
 }
 
-function toggle(e){
-  if(e.target.checked){e.target.nextElementSibling.classList.add('checkedLi');e.target.nextElementSibling.nextElementSibling.classList.add('checkedLi')}
-  else{e.target.nextElementSibling.classList.remove('checkedLi');e.target.nextElementSibling.nextElementSibling.classList.remove('checkedLi')}
+function edit(text,date){
+  
 }
 
-function setError(text,date){
-  if(!text && !date){throw new Error('Neither Name nor Deadline is entered')}
-  if(!text){throw new Error('Name is not entered')}
-  if(!date){throw new Error('Deadline is not entered')}
+function toggle(e) {
+  if (e.target.checked) {
+    e.target.nextElementSibling.classList.add("checkedLi");
+    e.target.nextElementSibling.nextElementSibling.classList.add("checkedLi");
+  } else {
+    e.target.nextElementSibling.classList.remove("checkedLi");
+    e.target.nextElementSibling.nextElementSibling.classList.remove(
+      "checkedLi",
+    );
+  }
+}
+
+function setError(text, date) {
+  if (!text && !date) {
+    throw new Error("Neither Name nor Deadline is entered");
+  }
+  if (!text) {
+    throw new Error("Name is not entered");
+  }
+  if (!date) {
+    throw new Error("Deadline is not entered");
+  }
 }
 
 input.addEventListener("keydown", (e) => {
@@ -54,20 +75,10 @@ list.addEventListener("click", (e) => {
     e.target.parentElement.classList.remove("showListElement");
     let timeout = setTimeout(() => {
       e.target.parentElement.parentElement.remove();
-      // saveLocalStorage();
     }, 400);
   }
 });
 
-form.addEventListener('submit',e=>{
-  e.preventDefault()
-})
-
-// function saveLocalStorage() {
-//   let data = [];
-//   list.querySelectorAll("li").forEach((item) => {
-//     data.push(item.textContent);
-//   });
-
-//   localStorage.setItem("items", JSON.stringify(data));
-// }
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+});

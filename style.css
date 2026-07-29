@@ -46,7 +46,7 @@ ul {
         transition: 300ms all ease;
         transform: scale(0);
         display: grid;
-        grid-template-columns: 70fr auto;
+        grid-template-columns: 70fr auto auto;
         justify-content: space-between;
         align-items: center;
     }
@@ -118,4 +118,8 @@ li {
 
 input[type='checkbox'] {
     display: none;
+}
+
+#editButton{
+    padding: 10px 15px;
 }
