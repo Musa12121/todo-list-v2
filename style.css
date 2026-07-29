@@ -55,7 +55,7 @@ ul {
 ul li label {
     padding: 0 10%;
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto;
     align-items: center;
     justify-content:space-between;
     user-select: none;
@@ -113,18 +113,22 @@ li {
 
 .checkedLi {
     text-decoration: line-through;
+    text-decoration-thickness: 3px;
+    text-decoration-color: black;
     color: gray;
 }
 
 input[type='checkbox'] {
-    display: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 10px;
 }
+
 
 #editButton{
     padding: 10px 15px;
     margin: 0 15px;
-}
-
-.editInput{
-    background-color: transparent;
 }

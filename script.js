@@ -49,14 +49,10 @@ function edit(text, date) {}
 function toggle(e, id) {
   if (e.target.checked) {
     data.find(el=>el['id']==id).isCompleted=true
-    e.target.nextElementSibling.classList.add("checkedLi");
-    e.target.nextElementSibling.nextElementSibling.classList.add("checkedLi");
+    e.target.parentElement.classList.add("checkedLi");
   } else {
     data.find(el=>el['id']==id).isCompleted=false
-    e.target.nextElementSibling.classList.remove("checkedLi");
-    e.target.nextElementSibling.nextElementSibling.classList.remove(
-      "checkedLi",
-    );
+    e.target.parentElement.classList.remove("checkedLi");
   }
 }
 
