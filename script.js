@@ -19,6 +19,7 @@ function makingTask(text, date) {
   let listElement = document.createElement("li");
   let newDate = new Date();
   let id = Date.now().toString();
+  listElement.setAttribute('id',id)
 
   listElement.innerHTML = `
   <label>
@@ -83,7 +84,9 @@ list.addEventListener("click", (e) => {
   if (e.target.classList.contains("fa-trash")) {
     e.target.parentElement.classList.remove("showListElement");
     let timeout = setTimeout(() => {
-      e.target.parentElement.parentElement.remove();
+      data=data.filter(el=>el.id!=e.target.parentElement.getAttribute('id'))
+      addLocalStorage()
+      e.target.parentElement.remove();
     }, 400);
   }
 });
@@ -93,7 +96,7 @@ form.addEventListener("submit", (e) => {
 });
 
 window.addEventListener("load", () => {
-  if (localStorage.getItem("data")) {
+  if (JSON.parse(localStorage.getItem("data"))) {
       JSON.parse(localStorage.getItem("data")).forEach((element) => {
         makingTask(element.title,element.deadline);
       })
