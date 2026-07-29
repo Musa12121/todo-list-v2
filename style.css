@@ -122,4 +122,9 @@ input[type='checkbox'] {
 
 #editButton{
     padding: 10px 15px;
+    margin: 0 15px;
+}
+
+.editInput{
+    background-color: transparent;
 }

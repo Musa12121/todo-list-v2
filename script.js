@@ -17,26 +17,25 @@ function makingTask(text, date) {
     return;
   }
   let listElement = document.createElement("li");
+  let newDate = new Date();
+  let id = Date.now().toString();
 
   listElement.innerHTML = `
   <label>
-  <input type='checkbox' onchange='toggle(event)'>
-  <input type='text' value=${text}> 
-  <input type='datetime-local' value=${date}>
+  <input type='checkbox' onchange='toggle(event,${id})'>
+  <input type='text' value='${text}' class='editInput'> 
+  <input type='datetime-local' value='${date}' class='editInput'>
   </label>
   <button id='editButton' onclick='edit(text,date)'>Edit</button>
   <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
-  let date2 = new Date();
-  data.push(
-    JSON.stringify({
-      id: Date.now().toString(),
-      title: text,
-      isCompleted: false,
-      createdAt: `${date2.toLocaleDateString().split("/").reverse().join("-")}T${date2.getHours()}:${date2.getMinutes()}:${date2.getSeconds()}`,
-      deadline: `${date}:00`,
-    }),
-  );
-  console.log(data);
+  data.push({
+    id: id,
+    title: text,
+    isCompleted: false,
+    createdAt: `${newDate.toLocaleDateString().split("/").reverse().join("-")}T${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}`,
+    deadline: `${date}`,
+  });
+  addLocalStorage();
   list.appendChild(listElement);
 
   setTimeout(() => {
@@ -46,11 +45,13 @@ function makingTask(text, date) {
 
 function edit(text, date) {}
 
-function toggle(e) {
+function toggle(e, id) {
   if (e.target.checked) {
+    data.find(el=>el['id']==id).isCompleted=true
     e.target.nextElementSibling.classList.add("checkedLi");
     e.target.nextElementSibling.nextElementSibling.classList.add("checkedLi");
   } else {
+    data.find(el=>el['id']==id).isCompleted=false
     e.target.nextElementSibling.classList.remove("checkedLi");
     e.target.nextElementSibling.nextElementSibling.classList.remove(
       "checkedLi",
@@ -90,3 +91,17 @@ list.addEventListener("click", (e) => {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 });
+
+window.addEventListener("load", () => {
+  if (localStorage.getItem("data")) {
+      JSON.parse(localStorage.getItem("data")).forEach((element) => {
+        makingTask(element.title,element.deadline);
+      })
+  } else {
+    list.textContent = "example text";
+  }
+});
+
+function addLocalStorage() {
+  localStorage.setItem("data", JSON.stringify(data));
+}
