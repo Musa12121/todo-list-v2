@@ -11,7 +11,7 @@ function main() {
 }
 
 function makingTask(text, date, checked = false) {
-  textError.textContent='';
+  textError.textContent = "";
   input.classList.remove("wrongInput");
   dateInput.classList.remove("wrongInput");
   if (!text && !date) {
@@ -73,15 +73,24 @@ function makingTask(text, date, checked = false) {
 }
 
 function edit(e, id) {
+  e.target.previousElementSibling.previousElementSibling.classList.remove("wrongInput");
+  e.target.previousElementSibling.classList.remove("wrongInput");
+  if (!e.target.previousElementSibling.previousElementSibling.value &&
+    (new Date(e.target.previousElementSibling.value) < new Date() ||
+      !e.target.previousElementSibling.value)
+    ) {
+        e.target.previousElementSibling.previousElementSibling.classList.add("wrongInput");
+        e.target.previousElementSibling.classList.add("wrongInput");
+      }
   if (!e.target.previousElementSibling.previousElementSibling.value) {
-    e.target.previousElementSibling.previousElementSibling.classList.add(
-      "wrongInput",
-    );
+    e.target.previousElementSibling.previousElementSibling.classList.add("wrongInput");
     return;
   }
-  e.target.previousElementSibling.previousElementSibling.classList.remove(
-    "wrongInput",
-  );
+  if (
+    new Date(e.target.previousElementSibling.value) < new Date() ||
+    !e.target.previousElementSibling.value) {
+    e.target.previousElementSibling.classList.add("wrongInput");
+  }
 
   data.find((el) => el["id"] == id).title =
     e.target.previousElementSibling.previousElementSibling.value;
