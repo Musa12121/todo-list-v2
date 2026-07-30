@@ -3,33 +3,39 @@ let addBtn = document.getElementById("addBtn");
 let list = document.getElementById("list");
 let dateInput = document.getElementById("dateInput");
 let form = document.querySelector("form");
+let textError = document.querySelector(".textError");
 let data = [];
 
 function main() {
   makingTask(input.value, dateInput.value);
-
-  input.value = null;
-  dateInput.value = null;
 }
 
 function makingTask(text, date, checked = false) {
   list.textContent = "";
+  input.classList.remove("wrongInput");
+  dateInput.classList.remove("wrongInput");
   if (!text && !date) {
-    throw new Error("Neither Name nor Deadline is entered");
+    input.classList.add("wrongInput");
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Neither Task nor Deadline is entered";
     return;
   }
   if (!text) {
-    throw new Error("Name is not entered");
+    input.classList.add("wrongInput");
+    textError.textContent = "Task is not entered";
     return;
   }
   if (!date) {
-    throw new Error("Deadline is not entered");
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Deadline is not entered";
     return;
   }
-  if (new Date() > date) {
-    throw new Error("Deadline must be future time");
+  if (new Date() > new Date(date)) {
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Deadline has to be the future time";
     return;
   }
+
   let listElement = document.createElement("li");
   let newDate = new Date();
   let id = Date.now().toString();
@@ -62,13 +68,21 @@ function makingTask(text, date, checked = false) {
   setTimeout(() => {
     listElement.classList.add("showListElement");
   }, 100);
+  input.value = null;
+  dateInput.value = null;
 }
 
 function edit(e, id) {
   if (!e.target.previousElementSibling.previousElementSibling.value) {
-    throw new Error("You cannot make the name input empty");
+    e.target.previousElementSibling.previousElementSibling.classList.add(
+      "wrongInput",
+    );
     return;
   }
+  e.target.previousElementSibling.previousElementSibling.classList.remove(
+    "wrongInput",
+  );
+
   data.find((el) => el["id"] == id).title =
     e.target.previousElementSibling.previousElementSibling.value;
   data.find((el) => el["id"] == id).deadline =
