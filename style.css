@@ -46,20 +46,12 @@ ul {
         transition: 300ms all ease;
         transform: scale(0);
         display: grid;
-        grid-template-columns: 70fr auto auto;
+        grid-template-columns: auto auto auto auto auto;
         justify-content: space-between;
         align-items: center;
     }
 }
 
-ul li label {
-    padding: 0 10%;
-    display: grid;
-    grid-template-columns: auto auto auto;
-    align-items: center;
-    justify-content:space-between;
-    user-select: none;
-}
 
 .showListElement {
     transform: scale(1);
@@ -120,15 +112,36 @@ li {
 
 input[type='checkbox'] {
     appearance: none;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     background-color: white;
     border: 1px solid;
-    border-radius: 10px;
+    border-radius: 9px;
+    transition: 300ms all ease;
+    display: inline-block;
+    position: relative;
+}
+
+input[type='checkbox']:checked {
+    background-color: #2196F3;
+    border-color: #2196F3;
+}
+
+input[type='checkbox']::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 4px;
+    width: 7px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    z-index: 2;
 }
 
 
-#editButton{
+#editButton {
     padding: 10px 15px;
     margin: 0 15px;
 }

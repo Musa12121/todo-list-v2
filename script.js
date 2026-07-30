@@ -19,15 +19,13 @@ function makingTask(text, date) {
   let listElement = document.createElement("li");
   let newDate = new Date();
   let id = Date.now().toString();
-  listElement.setAttribute('id',id)
+  listElement.setAttribute("id", id);
 
-  listElement.innerHTML = `
-  <label>
-  <input type='checkbox' onchange='toggle(event,${id})'>
-  <input type='text' value='${text}' class='editInput'> 
-  <input type='datetime-local' value='${date}' class='editInput'>
-  </label>
-  <button id='editButton' onclick='edit(text,date)'>Edit</button>
+  listElement.innerHTML = ` 
+  <input type='checkbox' onchange='toggle(event,"${id}")'>
+  <input type='text' value="${text}"> 
+  <input type='datetime-local' value="${date}">
+  <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
   <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
   data.push({
     id: id,
@@ -44,16 +42,23 @@ function makingTask(text, date) {
   }, 100);
 }
 
-function edit(text, date) {}
+function edit(e, id) {
+  data.find((el) => el["id"] == id).title =
+    e.target.previousElementSibling.previousElementSibling.value;
+  data.find((el) => el["id"] == id).deadline =
+    e.target.previousElementSibling.value;
+  addLocalStorage();
+}
 
 function toggle(e, id) {
   if (e.target.checked) {
-    data.find(el=>el['id']==id).isCompleted=true
-    e.target.parentElement.classList.add("checkedLi");
+    data.find((el) => el["id"] == id).isCompleted = true;
+    e.target.nextElementSibling.classList.add("checkedLi");
   } else {
-    data.find(el=>el['id']==id).isCompleted=false
-    e.target.parentElement.classList.remove("checkedLi");
+    data.find((el) => el["id"] == id).isCompleted = false;
+    e.target.nextElementSibling.classList.remove("checkedLi");
   }
+  addLocalStorage();
 }
 
 function setError(text, date) {
@@ -80,8 +85,10 @@ list.addEventListener("click", (e) => {
   if (e.target.classList.contains("fa-trash")) {
     e.target.parentElement.classList.remove("showListElement");
     let timeout = setTimeout(() => {
-      data=data.filter(el=>el.id!=e.target.parentElement.getAttribute('id'))
-      addLocalStorage()
+      data = data.filter(
+        (el) => el.id != e.target.parentElement.getAttribute("id"),
+      );
+      addLocalStorage();
       e.target.parentElement.remove();
     }, 400);
   }
@@ -93,9 +100,9 @@ form.addEventListener("submit", (e) => {
 
 window.addEventListener("load", () => {
   if (JSON.parse(localStorage.getItem("data"))) {
-      JSON.parse(localStorage.getItem("data")).forEach((element) => {
-        makingTask(element.title,element.deadline);
-      })
+    JSON.parse(localStorage.getItem("data")).forEach((element) => {
+      makingTask(element.title, element.deadline);
+    });
   } else {
     list.textContent = "example text";
   }
