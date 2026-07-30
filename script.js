@@ -12,8 +12,16 @@ function main() {
 }
 
 function makingTask(text, date) {
-  if (!text || !date) {
-    setError(text, date);
+  if (!text && !date) {
+    throw new Error("Neither Name nor Deadline is entered");
+    return;
+  }
+  if (!text) {
+    throw new Error("Name is not entered");
+    return;
+  }
+  if (!date) {
+    throw new Error("Deadline is not entered");
     return;
   }
   let listElement = document.createElement("li");
@@ -43,6 +51,10 @@ function makingTask(text, date) {
 }
 
 function edit(e, id) {
+  if (!e.target.previousElementSibling.previousElementSibling.value) {
+    throw new Error("You cannot make the name input empty");
+    return;
+  }
   data.find((el) => el["id"] == id).title =
     e.target.previousElementSibling.previousElementSibling.value;
   data.find((el) => el["id"] == id).deadline =
@@ -59,18 +71,6 @@ function toggle(e, id) {
     e.target.nextElementSibling.classList.remove("checkedLi");
   }
   addLocalStorage();
-}
-
-function setError(text, date) {
-  if (!text && !date) {
-    throw new Error("Neither Name nor Deadline is entered");
-  }
-  if (!text) {
-    throw new Error("Name is not entered");
-  }
-  if (!date) {
-    throw new Error("Deadline is not entered");
-  }
 }
 
 input.addEventListener("keydown", (e) => {
