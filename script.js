@@ -11,7 +11,7 @@ function main() {
 }
 
 function makingTask(text, date, checked = false) {
-  list.textContent = "";
+  textError.textContent='';
   input.classList.remove("wrongInput");
   dateInput.classList.remove("wrongInput");
   if (!text && !date) {
