@@ -9,10 +9,11 @@ function main() {
   makingTask(input.value, dateInput.value);
 
   input.value = null;
-  dateInput.value=null;
+  dateInput.value = null;
 }
 
-function makingTask(text, date,checked=false) {
+function makingTask(text, date, checked = false) {
+  list.textContent = "";
   if (!text && !date) {
     throw new Error("Neither Name nor Deadline is entered");
     return;
@@ -23,6 +24,10 @@ function makingTask(text, date,checked=false) {
   }
   if (!date) {
     throw new Error("Deadline is not entered");
+    return;
+  }
+  if (new Date() > date) {
+    throw new Error("Deadline must be future time");
     return;
   }
   let listElement = document.createElement("li");
@@ -37,15 +42,15 @@ function makingTask(text, date,checked=false) {
     deadline: `${date}`,
   });
   addLocalStorage();
-if(checked){
-  listElement.innerHTML = ` 
+  if (checked) {
+    listElement.innerHTML = ` 
   <input type='checkbox' onchange='toggle(event,"${id}")' checked>
   <input type='text' value="${text}" class='checkedLi'> 
   <input type='datetime-local' value="${date}">
   <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
-  <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;}
-  else{
-  listElement.innerHTML = ` 
+  <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
+  } else {
+    listElement.innerHTML = ` 
   <input type='checkbox' onchange='toggle(event,"${id}")'>
   <input type='text' value="${text}"> 
   <input type='datetime-local' value="${date}">
@@ -88,6 +93,23 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
+function completeCounter() {
+  let completed = 0;
+  let notCompleted = 0;
+  let late = 0;
+  data.forEach((item) => {
+    if (item.isCompleted) {
+      completed += 1;
+    } else {
+      notCompleted += 1;
+    }
+    if (new Date() > new Date(item.deadline)) {
+      late += 1;
+    }
+  });
+  list.innerHTML = `<p>Tamamlanmış:${completed}</p><p>Tamamlanmamış:${notCompleted}</p> <p>Gecikmiş:${late}</p>`;
+}
+
 addBtn.addEventListener("click", main);
 
 list.addEventListener("click", (e) => {
@@ -99,6 +121,12 @@ list.addEventListener("click", (e) => {
       );
       addLocalStorage();
       e.target.parentElement.remove();
+      if (
+        localStorage.getItem("data") == null ||
+        JSON.parse(localStorage.getItem("data")).length == 0
+      ) {
+        completeCounter();
+      }
     }, 400);
   }
 });
@@ -108,11 +136,16 @@ form.addEventListener("submit", (e) => {
 });
 
 window.addEventListener("load", () => {
-  if (JSON.parse(localStorage.getItem("data"))) {
+  if (
+    localStorage.getItem("data") == null ||
+    JSON.parse(localStorage.getItem("data")).length == 0
+  ) {
+    completeCounter();
+  } else if (JSON.parse(localStorage.getItem("data")).length > 0) {
     JSON.parse(localStorage.getItem("data")).forEach((element) => {
-      makingTask(element.title, element.deadline,element.isCompleted);
+      makingTask(element.title, element.deadline, element.isCompleted);
     });
-  } 
+  }
 });
 
 function addLocalStorage() {
