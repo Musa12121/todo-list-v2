@@ -8,10 +8,11 @@ let data = [];
 function main() {
   makingTask(input.value, dateInput.value);
 
-  input.value = "";
+  input.value = null;
+  dateInput.value=null;
 }
 
-function makingTask(text, date) {
+function makingTask(text, date,checked=false) {
   if (!text && !date) {
     throw new Error("Neither Name nor Deadline is entered");
     return;
@@ -28,21 +29,29 @@ function makingTask(text, date) {
   let newDate = new Date();
   let id = Date.now().toString();
   listElement.setAttribute("id", id);
-
+  data.push({
+    id: id,
+    title: text,
+    isCompleted: checked,
+    createdAt: `${newDate.toLocaleDateString().split("/").reverse().join("-")}T${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}`,
+    deadline: `${date}`,
+  });
+  addLocalStorage();
+if(checked){
+  listElement.innerHTML = ` 
+  <input type='checkbox' onchange='toggle(event,"${id}")' checked>
+  <input type='text' value="${text}" class='checkedLi'> 
+  <input type='datetime-local' value="${date}">
+  <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
+  <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;}
+  else{
   listElement.innerHTML = ` 
   <input type='checkbox' onchange='toggle(event,"${id}")'>
   <input type='text' value="${text}"> 
   <input type='datetime-local' value="${date}">
   <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
   <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
-  data.push({
-    id: id,
-    title: text,
-    isCompleted: false,
-    createdAt: `${newDate.toLocaleDateString().split("/").reverse().join("-")}T${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}`,
-    deadline: `${date}`,
-  });
-  addLocalStorage();
+  }
   list.appendChild(listElement);
 
   setTimeout(() => {
@@ -101,11 +110,9 @@ form.addEventListener("submit", (e) => {
 window.addEventListener("load", () => {
   if (JSON.parse(localStorage.getItem("data"))) {
     JSON.parse(localStorage.getItem("data")).forEach((element) => {
-      makingTask(element.title, element.deadline);
+      makingTask(element.title, element.deadline,element.isCompleted);
     });
-  } else {
-    list.textContent = "example text";
-  }
+  } 
 });
 
 function addLocalStorage() {
