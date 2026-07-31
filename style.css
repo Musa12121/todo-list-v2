@@ -145,7 +145,6 @@ input[type='checkbox']::after {
     padding: 10px 15px;
     margin: 0 15px;
 }
-
 .wrongInput{
     border-color:  red !important;
     transition: 300ms all ease;
