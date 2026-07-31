@@ -10,25 +10,8 @@
 <body>
     <h1>TO DO LIST</h1>
     <form class="container"> 
-        <div class="inputBox"><input type="text" id="text"><button id="addBtn">Add</button><input type="datetime-local" id="dateInput"></div>
-        </div>
-        
-        <div class="controls-panel">
-            <input type="text" id="searchInput" placeholder="🔍 Task axtar...">
-            <div class="filter-sort-row">
-                <button type="button" class="filter-btn active" data-filter="all">Hamısı</button>
-                <button type="button" class="filter-btn" data-filter="active">Aktiv</button>
-                <button type="button" class="filter-btn" data-filter="completed">Tamamlanmış</button>
-                <button type="button" class="filter-btn" data-filter="overdue">Gecikənlər</button>
-        
-                <select id="sortSelect">
-                    <option value="deadline-asc">📅 Yaxından-Uzağa</option>
-                    <option value="deadline-desc">📅 Uzaqdan-Yaxına</option>
-                    <option value="created-desc">🆕 Ən yeni</option>
-                </select>
-            </div>
-            <ul id="list"></ul>
-        </div>
+        <span class="textError"></span><div class="inputBox"><input type="text" id="text"><button id="addBtn">Add</button><input type="datetime-local" id="dateInput"></div>
+        <ul id="list"></ul>
     </form>
     <script src="script.js"></script>
 </body>

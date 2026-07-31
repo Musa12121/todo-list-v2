@@ -3,58 +3,95 @@ let addBtn = document.getElementById("addBtn");
 let list = document.getElementById("list");
 let dateInput = document.getElementById("dateInput");
 let form = document.querySelector("form");
+let textError = document.querySelector(".textError");
 let data = [];
 
 function main() {
   makingTask(input.value, dateInput.value);
-
-  input.value = "";
 }
 
-function makingTask(text, date) {
+function makingTask(text, date, checked = false) {
+  textError.textContent = "";
+  input.classList.remove("wrongInput");
+  dateInput.classList.remove("wrongInput");
   if (!text && !date) {
-    throw new Error("Neither Name nor Deadline is entered");
+    input.classList.add("wrongInput");
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Neither Task nor Deadline is entered";
     return;
   }
   if (!text) {
-    throw new Error("Name is not entered");
+    input.classList.add("wrongInput");
+    textError.textContent = "Task is not entered";
     return;
   }
   if (!date) {
-    throw new Error("Deadline is not entered");
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Deadline is not entered";
     return;
   }
+  if (new Date() > new Date(date)) {
+    dateInput.classList.add("wrongInput");
+    textError.textContent = "Deadline has to be the future time";
+    return;
+  }
+
   let listElement = document.createElement("li");
   let newDate = new Date();
   let id = Date.now().toString();
   listElement.setAttribute("id", id);
-
-  listElement.innerHTML = ` 
+  data.push({
+    id: id,
+    title: text,
+    isCompleted: checked,
+    createdAt: `${newDate.toLocaleDateString().split("/").reverse().join("-")}T${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}`,
+    deadline: `${date}`,
+  });
+  addLocalStorage();
+  if (checked) {
+    listElement.innerHTML = ` 
+  <input type='checkbox' onchange='toggle(event,"${id}")' checked>
+  <input type='text' value="${text}" class='checkedLi'> 
+  <input type='datetime-local' value="${date}">
+  <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
+  <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
+  } else {
+    listElement.innerHTML = ` 
   <input type='checkbox' onchange='toggle(event,"${id}")'>
   <input type='text' value="${text}"> 
   <input type='datetime-local' value="${date}">
   <button id='editButton' onclick='edit(event,"${id}")'>Edit</button>
   <i class="fa-solid fa-trash" style='font-size:20px;color: rgb(255, 255, 255);background-color:red;padding:10px 28px 10px 10px;border-radius:5px'></i>`;
-  data.push({
-    id: id,
-    title: text,
-    isCompleted: false,
-    createdAt: `${newDate.toLocaleDateString().split("/").reverse().join("-")}T${newDate.getHours()}:${newDate.getMinutes()}:${newDate.getSeconds()}`,
-    deadline: `${date}`,
-  });
-  addLocalStorage();
+  }
   list.appendChild(listElement);
 
   setTimeout(() => {
     listElement.classList.add("showListElement");
   }, 100);
+  input.value = null;
+  dateInput.value = null;
 }
 
 function edit(e, id) {
+  e.target.previousElementSibling.previousElementSibling.classList.remove("wrongInput");
+  e.target.previousElementSibling.classList.remove("wrongInput");
+  if (!e.target.previousElementSibling.previousElementSibling.value &&
+    (new Date(e.target.previousElementSibling.value) < new Date() ||
+      !e.target.previousElementSibling.value)
+    ) {
+        e.target.previousElementSibling.previousElementSibling.classList.add("wrongInput");
+        e.target.previousElementSibling.classList.add("wrongInput");
+      }
   if (!e.target.previousElementSibling.previousElementSibling.value) {
-    throw new Error("You cannot make the name input empty");
+    e.target.previousElementSibling.previousElementSibling.classList.add("wrongInput");
     return;
   }
+  if (
+    new Date(e.target.previousElementSibling.value) < new Date() ||
+    !e.target.previousElementSibling.value) {
+    e.target.previousElementSibling.classList.add("wrongInput");
+  }
+
   data.find((el) => el["id"] == id).title =
     e.target.previousElementSibling.previousElementSibling.value;
   data.find((el) => el["id"] == id).deadline =
@@ -79,6 +116,23 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
+function completeCounter() {
+  let completed = 0;
+  let notCompleted = 0;
+  let late = 0;
+  data.forEach((item) => {
+    if (item.isCompleted) {
+      completed += 1;
+    } else {
+      notCompleted += 1;
+    }
+    if (new Date() > new Date(item.deadline)) {
+      late += 1;
+    }
+  });
+  list.innerHTML = `<p>Tamamlanmış:${completed}</p><p>Tamamlanmamış:${notCompleted}</p> <p>Gecikmiş:${late}</p>`;
+}
+
 addBtn.addEventListener("click", main);
 
 list.addEventListener("click", (e) => {
@@ -90,6 +144,12 @@ list.addEventListener("click", (e) => {
       );
       addLocalStorage();
       e.target.parentElement.remove();
+      if (
+        localStorage.getItem("data") == null ||
+        JSON.parse(localStorage.getItem("data")).length == 0
+      ) {
+        completeCounter();
+      }
     }, 400);
   }
 });
@@ -99,12 +159,15 @@ form.addEventListener("submit", (e) => {
 });
 
 window.addEventListener("load", () => {
-  if (JSON.parse(localStorage.getItem("data"))) {
+  if (
+    localStorage.getItem("data") == null ||
+    JSON.parse(localStorage.getItem("data")).length == 0
+  ) {
+    completeCounter();
+  } else if (JSON.parse(localStorage.getItem("data")).length > 0) {
     JSON.parse(localStorage.getItem("data")).forEach((element) => {
-      makingTask(element.title, element.deadline);
+      makingTask(element.title, element.deadline, element.isCompleted);
     });
-  } else {
-    list.textContent = "example text";
   }
 });
 
