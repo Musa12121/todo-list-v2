@@ -174,3 +174,116 @@ window.addEventListener("load", () => {
 function addLocalStorage() {
   localStorage.setItem("data", JSON.stringify(data));
 }
+
+const searchInputEl = document.getElementById("searchInput");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const sortSelectEl = document.getElementById("sortSelect");
+let currentFilterState = "all";
+
+if (searchInputEl) searchInputEl.addEventListener("input", updateTasksView);
+if (sortSelectEl) sortSelectEl.addEventListener("change", updateTasksView);
+
+filterButtons.forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    filterButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilterState = btn.getAttribute("data-filter");
+    updateTasksView();
+  });
+});
+
+list.addEventListener("change", updateTasksView);
+const observer = new MutationObserver(updateTasksView);
+observer.observe(list, { childList: true });
+
+function updateTasksView() {
+  const lis = Array.from(list.children);
+  if (lis.length === 0) return;
+
+  const searchValue = searchInputEl ? searchInputEl.value.toLowerCase() : "";
+
+  lis.forEach(li => {
+    const inputs = li.querySelectorAll("input");
+    if (inputs.length < 3) return; 
+
+    const isChecked = inputs[0].checked;
+    const text = inputs[1].value.toLowerCase();
+    const dateStr = inputs[2].value;
+
+    const deadline = new Date(dateStr);
+    const now = new Date();
+    const diffHours = (deadline - now) / (1000 * 60 * 60);
+
+    let isOverdue = false;
+    let isDueSoon = false;
+
+    if (!isChecked && diffHours < 0) isOverdue = true;
+    else if (!isChecked && diffHours >= 0 && diffHours <= 24) isDueSoon = true;
+
+    let badge = li.querySelector(".status-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "status-badge";
+      li.insertBefore(badge, li.querySelector(".fa-trash"));
+    }
+
+    if (isChecked) {
+      li.style.backgroundColor = "#f4f1ea";
+      li.style.border = "none";
+      badge.innerHTML = "Tamamlanıb";
+      badge.className = "status-badge badge-completed";
+    } else if (isOverdue) {
+      li.style.backgroundColor = "#ffe6e6";
+      li.style.border = "2px solid #ff4d4d";
+      badge.innerHTML = "🔴 Gecikir!";
+      badge.className = "status-badge badge-overdue";
+    } else if (isDueSoon) {
+      li.style.backgroundColor = "#fff9e6";
+      li.style.border = "2px solid #ffcc00";
+      badge.innerHTML = "🟡 Yaxınlaşır";
+      badge.className = "status-badge badge-due-soon";
+    } else {
+      li.style.backgroundColor = "#f4f1ea";
+      li.style.border = "none";
+      badge.innerHTML = "🟢 Normal";
+      badge.className = "status-badge badge-normal";
+    }
+
+    let matchesSearch = text.includes(searchValue);
+    let matchesFilter = true;
+
+    if (currentFilterState === "active") matchesFilter = !isChecked;
+    if (currentFilterState === "completed") matchesFilter = isChecked;
+    if (currentFilterState === "overdue") matchesFilter = isOverdue;
+
+    if (matchesSearch && matchesFilter) {
+      li.style.display = "grid";
+    } else {
+      li.style.display = "none"; 
+    }
+  });
+
+  lis.sort((a, b) => {
+    const dateInputA = a.querySelectorAll("input")[2];
+    const dateInputB = b.querySelectorAll("input")[2];
+    if (!dateInputA || !dateInputB) return 0;
+
+    const dateA = new Date(dateInputA.value);
+    const dateB = new Date(dateInputB.value);
+
+    const sortVal = sortSelectEl ? sortSelectEl.value : "deadline-asc";
+
+    if (sortVal === "deadline-asc") return dateA - dateB;
+    if (sortVal === "deadline-desc") return dateB - dateA;
+    if (sortVal === "created-desc") return parseInt(b.id) - parseInt(a.id);
+    return 0;
+  });
+
+  observer.disconnect(); 
+  lis.forEach(li => list.appendChild(li));
+  observer.observe(list, { childList: true });
+}
+
+setTimeout(updateTasksView, 200);
+setInterval(updateTasksView, 60000);

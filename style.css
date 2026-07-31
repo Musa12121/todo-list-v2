@@ -147,11 +147,81 @@ input[type='checkbox']::after {
 }
 
 .wrongInput{
-    border-color:  red;
+    border-color:  red !important;
     transition: 300ms all ease;
 }
 
 .textError{
     color: darkred;
     font-weight: bold;
+}
+
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f4f1ea;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.controls-panel input,
+.controls-panel select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: black;
+}
+
+.filter-sort-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-btn {
+    background-color: #627C85;
+    padding: 8px 12px;
+}
+
+.filter-btn.active {
+    background-color: #35B2FB;
+}
+
+ul li {
+    grid-template-columns: auto auto auto auto auto auto !important;
+}
+
+.status-badge {
+    font-size: 13px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.badge-completed {
+    background-color: #888;
+    color: white;
+}
+
+.badge-overdue {
+    background-color: #ff4d4d;
+    color: white;
+    border: 1px solid #cc0000;
+}
+
+.badge-due-soon {
+    background-color: #ffcc00;
+    color: black;
+    border: 1px solid #b38f00;
+}
+
+.badge-normal {
+    background-color: #2eb85c;
+    color: white;
 }
